@@ -1,0 +1,13 @@
+asgiref==3.9.1
+colorama==0.4.6
+distlib==0.4.0
+Django==5.2.5
+filelock==3.18.0
+numpy==2.2.6
+opencv-python==4.12.0.88
+pillow==11.3.0
+platformdirs==4.3.8
+qrcode==8.2
+sqlparse==0.5.3
+tzdata==2025.2
+virtualenv==20.32.0
