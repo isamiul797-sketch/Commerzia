@@ -1,0 +1,20 @@
+{% extends 'app/base.html' %}
+{% block title %}Bottom Wear{% endblock title %}
+{% block main-content %}
+<div class="container my-4">
+  <h4>Bottom Wear Collection</h4>
+  <div class="row">
+    {% for product in products %}
+      <div class="col-md-3">
+        <div class="card mb-4">
+          <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.title }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.title }}</h5>
+            <p class="card-text">tk.{{ product.discounted_price }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock main-content %}

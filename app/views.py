@@ -213,3 +213,11 @@ def search(request):
     if query:
         results = Product.objects.filter(title__icontains=query)
     return render(request, 'app/search.html', {'results': results, 'query': query})
+
+def top_wear(request):
+    products = Product.objects.filter(category='TW')  
+    return render(request, 'app/topwear.html', {'products': products})
+
+def bottom_wear(request):
+    products = Product.objects.filter(category='BW')
+    return render(request, 'app/bottomwear.html', {'products': products})

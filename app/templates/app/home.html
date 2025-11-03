@@ -50,7 +50,7 @@
  <!-- Slider 1 -->
  <div class="owl-carousel" id="slider1">
   {% for b in bottomwears %}
-  <a href="{% url 'product-detail' b.id %}" class="btn"><div class="item"><img src="{{b.product_image.url}}" alt="" height="200px"><span class="fw-bold">{{b.title}}</span><br><span class="fs-5">Rs. {{b.discounted_price}}</span></div></a>
+  <a href="{% url 'product-detail' b.id %}" class="btn"><div class="item"><img src="{{b.product_image.url}}" alt="" height="200px"><span class="fw-bold">{{b.title}}</span><br><span class="fs-5">tk. {{b.discounted_price}}</span></div></a>
   {% endfor %}
   </div>
 </div>
@@ -97,7 +97,7 @@
  <!-- Slider 2 -->
  <div class="owl-carousel" id="slider2">
   {% for t in topwears %}
-  <a href="{% url 'product-detail' t.id %}" class="btn"><div class="item"><img src="{{t.product_image.url}}" alt="" height="200px"><span class="fw-bold">{{t.title}}</span><br><span class="fs-5">Rs. {{t.discounted_price}}</span></div></a>
+  <a href="{% url 'product-detail' t.id %}" class="btn"><div class="item"><img src="{{t.product_image.url}}" alt="" height="200px"><span class="fw-bold">{{t.title}}</span><br><span class="fs-5">tk. {{t.discounted_price}}</span></div></a>
   {% endfor %}
  </div>
 </div>
@@ -110,7 +110,7 @@
  <!-- Slider 3 -->
  <div class="owl-carousel" id="slider3">
   {% for m in mobiles %}
-  <a href="{% url 'product-detail' m.id %}" class="btn"><div class="item"><img src="{{m.product_image.url}}" alt="" height="200px"><span class="fw-bold">{{m.title}}</span><br><span class="fs-5">Rs. {{m.discounted_price}}</span></div></a>
+  <a href="{% url 'product-detail' m.id %}" class="btn"><div class="item"><img src="{{m.product_image.url}}" alt="" height="200px"><span class="fw-bold">{{m.title}}</span><br><span class="fs-5">tk. {{m.discounted_price}}</span></div></a>
   {% endfor %}
  </div>
 </div>
@@ -125,7 +125,7 @@
                 <img src="{{lap.product_image.url}}" alt="{{lap.title}}" height="200px">
                 <div class="product-info">
                     <span class="fw-bold">{{lap.title}}</span><br>
-                    <span class="fs-5">Rs. {{lap.discounted_price}}</span>
+                    <span class="fs-5">tk. {{lap.discounted_price}}</span>
                 </div>
             </a>
         </div>
