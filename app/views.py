@@ -7,6 +7,10 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+import stripe
+from django.conf import settings
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class ProductView(View):
@@ -159,33 +163,75 @@ class CustomerRegistrationView(View):
    messages.success(request, 'Your registrations has successfully done!')
    form.save()
   return render(request, 'app/customerregistration.html',{'form':form})
- 
+
 @login_required
 def checkout(request):
- user = request.user
- add = Customer.objects.filter(user=user)
- cart_items = Cart.objects.filter(user=user)
- amount = 0.0
- shipping_amount = 70.0
- total_amount = 0.0
- cart_product = [p for p in Cart.objects.all() if p.user == request.user]
- if cart_product:
-  for p in cart_product:
-    tempamount = (p.quantity * p.product.discounted_price)
-    amount+= tempamount
-  totalamount = amount + shipping_amount
- return render(request, 'app/checkout.html',{'add':add ,'totalamount':totalamount,'cart_items':cart_items})
+    user = request.user
+    add = Customer.objects.filter(user=user)
+    cart_items = Cart.objects.filter(user=user)
+    amount = sum(c.quantity * c.product.discounted_price for c in cart_items)
+    shipping_amount = 70
+    total_amount = amount + shipping_amount
+
+    return render(request, 'app/checkout.html', {
+        'add': add,
+        'cart_items': cart_items,
+        'totalamount': total_amount,
+        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY
+    })
+
+@login_required
+def create_checkout_session(request):
+    if request.method == "POST":
+        custid = request.POST.get('custid')
+        if not custid:
+            messages.error(request, "Please select a shipping address first.")
+            return redirect('checkout')
+
+        try:
+            customer = Customer.objects.get(id=custid)
+        except Customer.DoesNotExist:
+            messages.error(request, "Invalid address selected.")
+            return redirect('checkout')
+
+        user = request.user
+        cart_items = Cart.objects.filter(user=user)
+        amount = sum(item.quantity * item.product.discounted_price for item in cart_items)
+        total_amount = int((amount + 70) * 100)  # Stripe needs amount in cents
+
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'bdt',
+                    'product_data': {'name': 'Commerzia Order Payment'},
+                    'unit_amount': total_amount,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=settings.STRIPE_SUCCESS_URL + f"?custid={custid}",
+            cancel_url=settings.STRIPE_CANCEL_URL,
+        )
+        return redirect(checkout_session.url, code=303)
+
+    return redirect('checkout')
+
 
 @login_required
 def payment_done(request):
- user = request.user
- custid = request.GET.get('custid')
- customer = Customer.objects.get(id=custid)
- cart = Cart.objects.filter(user=user)
- for c in cart:
-  OrderPlaced(user=user,customer=customer, product=c.product, quantity=c.quantity).save()
-  c.delete()
-  return redirect('orders')
+    user = request.user
+    custid = request.GET.get('custid')
+    if not custid:
+        return redirect('checkout')
+    customer = Customer.objects.get(id=custid)
+    cart = Cart.objects.filter(user=user)
+    for c in cart:
+        OrderPlaced.objects.create(user=user, customer=customer, product=c.product, quantity=c.quantity)
+        c.delete()
+    return redirect('orders')
+
 
 @method_decorator(login_required, name='dispatch')
 class ProfileView(View):

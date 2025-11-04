@@ -26,6 +26,8 @@ requests-toolbelt==1.0.0
 rich==14.1.0
 setuptools==80.9.0
 sqlparse==0.5.3
+stripe==13.1.1
+typing_extensions==4.15.0
 tzdata==2025.2
 urllib3==2.5.0
 virtualenv==20.32.0

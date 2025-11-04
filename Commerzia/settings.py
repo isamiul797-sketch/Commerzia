@@ -115,3 +115,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_REDIRECT_URL = '/profile/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+
+from decouple import config
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
+
+STRIPE_SUCCESS_URL = "http://127.0.0.1:8000/paymentdone/"
+STRIPE_CANCEL_URL = "http://127.0.0.1:8000/checkout/"
