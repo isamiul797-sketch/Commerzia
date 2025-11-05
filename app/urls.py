@@ -32,7 +32,7 @@ urlpatterns = [
     
     path('checkout/', views.checkout, name='checkout'),
     path('paymentdone/', views.payment_done, name='paymentdone'),
-    path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),
+    path('create-checkout-session/', views.create_checkout_session, name='create-checkout-session'),
 
 
 
@@ -47,6 +47,11 @@ urlpatterns = [
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='app/password_reset_complete.html'), name='password_reset_complete'),
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
     path('search/', views.search, name='search'),
+
+    path('stripe-webhook/', views.stripe_webhook, name='stripe-webhook'),
+
+
+
 
 
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

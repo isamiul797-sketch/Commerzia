@@ -9,6 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import stripe
 from django.conf import settings
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -164,6 +167,7 @@ class CustomerRegistrationView(View):
    form.save()
   return render(request, 'app/customerregistration.html',{'form':form})
 
+
 @login_required
 def checkout(request):
     user = request.user
@@ -179,43 +183,42 @@ def checkout(request):
         'totalamount': total_amount,
         'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY
     })
-
 @login_required
 def create_checkout_session(request):
     if request.method == "POST":
         custid = request.POST.get('custid')
         if not custid:
-            messages.error(request, "Please select a shipping address first.")
+            messages.error(request, "Please select a shipping address.")
             return redirect('checkout')
 
-        try:
-            customer = Customer.objects.get(id=custid)
-        except Customer.DoesNotExist:
-            messages.error(request, "Invalid address selected.")
-            return redirect('checkout')
-
+        customer = Customer.objects.get(id=custid)
         user = request.user
         cart_items = Cart.objects.filter(user=user)
-        amount = sum(item.quantity * item.product.discounted_price for item in cart_items)
-        total_amount = int((amount + 70) * 100)  # Stripe needs amount in cents
+        total_amount = int((sum(item.quantity * item.product.discounted_price for item in cart_items) + 70) * 100)
 
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'bdt',
-                    'product_data': {'name': 'Commerzia Order Payment'},
-                    'unit_amount': total_amount,
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url=settings.STRIPE_SUCCESS_URL + f"?custid={custid}",
-            cancel_url=settings.STRIPE_CANCEL_URL,
-        )
-        return redirect(checkout_session.url, code=303)
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'bdt',
+                        'product_data': {'name': 'Commerzia Order Payment'},
+                        'unit_amount': total_amount,
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url=settings.STRIPE_SUCCESS_URL + f"?custid={custid}",
+                cancel_url=settings.STRIPE_CANCEL_URL,
+            )
+            return redirect(checkout_session.url, code=303)
 
+        except Exception as e:
+            messages.error(request, f"Stripe Error: {e}")
+            return redirect('checkout')
+
+   
     return redirect('checkout')
 
 
@@ -225,13 +228,13 @@ def payment_done(request):
     custid = request.GET.get('custid')
     if not custid:
         return redirect('checkout')
+
     customer = Customer.objects.get(id=custid)
     cart = Cart.objects.filter(user=user)
     for c in cart:
         OrderPlaced.objects.create(user=user, customer=customer, product=c.product, quantity=c.quantity)
         c.delete()
     return redirect('orders')
-
 
 @method_decorator(login_required, name='dispatch')
 class ProfileView(View):
@@ -267,3 +270,47 @@ def top_wear(request):
 def bottom_wear(request):
     products = Product.objects.filter(category='BW')
     return render(request, 'app/bottomwear.html', {'products': products})
+
+
+# Stripe webhook endpoint
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET  
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+
+        custid = session['metadata'].get('custid')
+        user_id = session['metadata'].get('user_id')
+
+        # Save orders
+        try:
+            customer = Customer.objects.get(id=custid)
+            cart_items = Cart.objects.filter(user_id=user_id)
+            for item in cart_items:
+                OrderPlaced.objects.create(
+                    user_id=user_id,
+                    customer=customer,
+                    product=item.product,
+                    quantity=item.quantity
+                )
+                item.delete()
+        except Exception as e:
+            print("Order saving error:", e)
+
+    return HttpResponse(status=200)

@@ -1,41 +1,45 @@
 {% extends 'app/base.html' %}
 {% block title %}Checkout{% endblock title %}
+
 {% block main-content %}
 <div class="container mt-5">
   <div class="row">
+    <!-- Order Summary -->
     <div class="col-md-6">
       <h4>Order Summary</h4>
       <hr>
       {% for item in cart_items %}
-      <div class="card mb-2">
-        <div class="card-body">
-          <h5>{{ item.product.title }}</h5>
-          <p>Quantity: {{ item.quantity }}</p>
-          <p>Price: ৳{{ item.total_cost }}</p>
+        <div class="card mb-2">
+          <div class="card-body">
+            <h5>{{ item.product.title }}</h5>
+            <p>Quantity: {{ item.quantity }}</p>
+            <p>Price: ৳{{ item.total_cost }}</p>
+          </div>
         </div>
-      </div>
       {% endfor %}
       <h5>Total + Shipping (৳70): ৳{{ totalamount }}</h5>
     </div>
 
+    <!-- Shipping Address & Payment -->
     <div class="col-md-6">
       <h4>Shipping Address</h4>
       <hr>
-      <form method="post" action="{% url 'create_checkout_session' %}">
-        {% csrf_token %}
-        {% for ad in add %}
-        <div class="card mb-2">
-          <div class="card-body">
+<form action="{% url 'create-checkout-session' %}" method="POST">
+    {% csrf_token %}
+    {% for ad in add %}
+    <div class="card mb-2">
+        <div class="card-body">
             <h6>{{ ad.name }}</h6>
             <p>{{ ad.locality }}, {{ ad.city }}, {{ ad.state }} - {{ ad.zipcode }}</p>
             <input type="radio" name="custid" value="{{ ad.id }}" required> Use this
-          </div>
         </div>
-        {% empty %}
-        <p class="text-danger">No address added yet.</p>
-        {% endfor %}
-        <button type="submit" class="btn btn-warning mt-3">Continue to Payment</button>
-      </form>
+    </div>
+    {% empty %}
+        <p>No shipping address added yet.</p>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary mt-3">Continue to Payment</button>
+</form>
+
     </div>
   </div>
 </div>
