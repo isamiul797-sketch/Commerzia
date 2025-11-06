@@ -55,21 +55,26 @@ Payment: Stripe API
 Authentication: Django Auth System
 
 1.Clone the repository:
+
 git clone https://github.com/isamiul797-sketch/Commerzia.git
 
 cd commerzia
 
 2.Create and activate a virtual environment:
+
 python -m venv venv
+
 venv\Scripts\activate  # for Windows
 
 3.Install dependencies:
 pip install -r requirements.txt
 
 4.Run database migrations:
+
 python manage.py migrate
 
 5.Start the server:
+
 http://127.0.0.1:8000/
 
 # Demo Flow
