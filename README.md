@@ -58,6 +58,7 @@ Authentication: Django Auth S
 
 1.Clone the repository:
 git clone https://github.com/isamiul797-sketch/Commerzia.git
+
 cd commerzia
 
 2.Create and activate a virtual environment:
@@ -86,6 +87,8 @@ View all past orders under My Orders
 # Developer
 
 Samiul Islam Sami
+
 E-commerce & Django Developer
+
 Focused on building scalable, secure backend systems with modern UI integration.
 
