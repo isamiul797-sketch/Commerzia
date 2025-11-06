@@ -52,9 +52,7 @@ Frontend: HTML5, CSS3, Bootstrap 5
 
 Payment: Stripe API
 
-Authentication: Django Auth S
-
-#How to Run Locally
+Authentication: Django Auth System
 
 1.Clone the repository:
 git clone https://github.com/isamiul797-sketch/Commerzia.git
