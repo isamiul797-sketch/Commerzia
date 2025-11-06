@@ -1,7 +1,7 @@
 🛍️ Commerzia
 
 Commerzia is a full-featured Django-based e-commerce web application built with a modern, minimalistic design.
-It allows users to browse laptops, view detailed product information, search for products, and securely make online payments through Stripe Checkout.
+It allows users to browse products, view detailed product information, search for products, and securely make online payments through Stripe Checkout.
 
  Key Features
 # Frontend
