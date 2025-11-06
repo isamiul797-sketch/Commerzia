@@ -1,32 +1,91 @@
-# Commerzia
+🛍️ Commerzia
 
-**Commerzia** is a Django-based e-commerce project .  
-It features a modern, minimalistic design with product sliders, detailed product pages, and responsive templates.
+Commerzia is a full-featured Django-based e-commerce web application built with a modern, minimalistic design.
+It allows users to browse laptops, view detailed product information, search for products, and securely make online payments through Stripe Checkout.
 
----
+ Key Features
+# Frontend
 
-## Features
-- Display laptops with images, titles, and discounted prices
-- Product detail pages for each laptop
-- Responsive **Bootstrap 5** templates
-- Multiple sliders for featured products
-- Minimalistic and clean UI
-- Admin panel for managing products
+Clean, responsive Bootstrap 5 UI
 
----
+Dynamic product listing with image, title, and discount price
 
-## File Overview
-- `manage.py` - Django project management
-- `core/` - Core app with base templates and static files
-- `shop/` - Main app for products and slider functionality
-- `requirements.txt` - Python dependencies
-- `templates/` - HTML templates for Home, About, Contact, Product pages
-- `.gitignore` - Ignored files/folders
-- `README.md` - Project overview
+Product detail pages for every laptop
 
----
+Search functionality to find products easily
 
-## How to Run Locally
-1. Clone the repo:
-```bash
-git clone https://github.com/<your-username>/commerzia.git
+Multiple product sliders for featured and trending items
+
+# Backend
+
+Built using Django 5 and SQLite (default database)
+
+Admin panel for managing products, categories, and orders
+
+Integrated Stripe Payment Gateway for real transactions
+
+Secure checkout flow (Customer → Payment → Order Confirmation)
+
+Authentication system (Login, Logout, Registration, Profile Management)
+
+# Stripe Payment Integration
+
+Customers can select products and proceed to checkout
+
+Payment session created using Stripe Checkout Session API
+
+After successful payment, users are redirected to an order confirmation page
+
+Orders are stored and displayed on the user’s order history page
+
+# Search Functionality
+
+Integrated live search system using Django query filters
+
+Users can search laptops by name or description directly from the navigation bar
+
+# Tech Stack
+
+Backend: Django, SQLite
+
+Frontend: HTML5, CSS3, Bootstrap 5
+
+Payment: Stripe API
+
+Authentication: Django Auth S
+
+#How to Run Locally
+
+1.Clone the repository:
+git clone https://github.com/isamiul797-sketch/Commerzia.git
+cd commerzia
+
+2.Create and activate a virtual environment:
+python -m venv venv
+venv\Scripts\activate  # for Windows
+
+3.Install dependencies:
+pip install -r requirements.txt
+
+4.Run database migrations:
+python manage.py migrate
+
+5.Start the server:
+http://127.0.0.1:8000/
+
+# Demo Flow
+
+Browse products → Add to cart → Checkout
+
+Secure payment via Stripe
+
+Redirect to order confirmation page
+
+View all past orders under My Orders
+
+# Developer
+
+Samiul Islam Sami
+E-commerce & Django Developer
+Focused on building scalable, secure backend systems with modern UI integration.
+
