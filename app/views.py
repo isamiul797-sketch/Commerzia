@@ -186,14 +186,16 @@ def checkout(request):
 @login_required
 def create_checkout_session(request):
     if request.method == "POST":
+
         custid = request.POST.get('custid')
         if not custid:
             messages.error(request, "Please select a shipping address.")
             return redirect('checkout')
 
-        customer = Customer.objects.get(id=custid)
         user = request.user
+        customer = Customer.objects.get(id=custid)
         cart_items = Cart.objects.filter(user=user)
+
         total_amount = int((sum(item.quantity * item.product.discounted_price for item in cart_items) + 70) * 100)
 
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -202,7 +204,7 @@ def create_checkout_session(request):
                 payment_method_types=['card'],
                 line_items=[{
                     'price_data': {
-                        'currency': 'bdt',
+                        'currency': 'usd',
                         'product_data': {'name': 'Commerzia Order Payment'},
                         'unit_amount': total_amount,
                     },
@@ -212,14 +214,16 @@ def create_checkout_session(request):
                 success_url=settings.STRIPE_SUCCESS_URL + f"?custid={custid}",
                 cancel_url=settings.STRIPE_CANCEL_URL,
             )
+
             return redirect(checkout_session.url, code=303)
 
         except Exception as e:
             messages.error(request, f"Stripe Error: {e}")
             return redirect('checkout')
 
-   
-    return redirect('checkout')
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 
 
 @login_required

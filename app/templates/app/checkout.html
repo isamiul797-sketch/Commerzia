@@ -26,19 +26,17 @@
       <hr>
 <form action="{% url 'create-checkout-session' %}" method="POST">
     {% csrf_token %}
-    {% for ad in add %}
-    <div class="card mb-2">
-        <div class="card-body">
-            <h6>{{ ad.name }}</h6>
-            <p>{{ ad.locality }}, {{ ad.city }}, {{ ad.state }} - {{ ad.zipcode }}</p>
-            <input type="radio" name="custid" value="{{ ad.id }}" required> Use this
-        </div>
-    </div>
-    {% empty %}
-        <p>No shipping address added yet.</p>
-    {% endfor %}
-    <button type="submit" class="btn btn-primary mt-3">Continue to Payment</button>
+    <label for="custid">Select shipping address:</label>
+    <select name="custid" id="custid" required>
+        {% for address in add %}
+            <option value="{{ address.id }}">{{ address.name }} - {{ address.locality }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-success">Continue to Payment</button>
 </form>
+
+
 
     </div>
   </div>
